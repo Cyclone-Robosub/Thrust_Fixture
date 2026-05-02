@@ -1,0 +1,5 @@
+hx711
+numpy
+pandas
+pigpio
+scipy
