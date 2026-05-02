@@ -1,0 +1,13 @@
+%% coeffs
+%   coefficient guesses from a paper that get pulled into the sim
+
+%appears in the hydro block
+kf1 = 0.005913;%[Nms/rad]
+kf0 = 0.07278; %[Nm]
+kv = 0.5392;
+
+%appears in the motor block
+Qmeas = 0000;
+Imech = 00000;
+kT0 = 0000;
+kT = 0000;
