@@ -5,8 +5,8 @@
 Voltage = 15; %[V]
 PWM_min = 1100; %[us]
 PWM_max = 1900; %[us]
-cycle_length = 6e6;%[us]
-cycles_per_run = 5; %a fully arbitrary descision...
+cycle_length = 6e3;%[ms]
+cycles_per_run = 2; %a fully arbitrary descision...
 
 
 
@@ -20,6 +20,7 @@ for t = 0:cycle_length*cycles_per_run
 end
 figure
 plot(1:length(pwm_ramp),pwm_ramp)
+
    
 
 
@@ -29,11 +30,14 @@ plot(1:length(pwm_ramp),pwm_ramp)
 set_pwm = 1700;
 pwm_square = zeros(cycle_length*cycles_per_run,1);
 pwm_square_int = zeros(cycle_length*cycles_per_run,1);
+time = zeros(size(pwm_square));
 for t = 0:cycle_length*cycles_per_run
     [pwm_square(t+1),pwm_square_int(t+1)] = pwmSquareWaveGenerator(mod(t,cycle_length),set_pwm,1500,cycle_length/2);
+    time(t+1) = t;
 end
 hold
 plot(1:length(pwm_square),pwm_square);
+writematrix([time,pwm_square_int],"square_wave_1700us_test.csv")
 
 %% Functions
 function [pwm,pwm_int] = pwmRampGenerator(t, start, stop, Tmax)
