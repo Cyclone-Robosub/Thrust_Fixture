@@ -10,12 +10,12 @@ sample_rate = 80; %[Hz]
 cycles_per_run = 6; %a fully arbitrary descision...
 gap_length = 2; %amount of seconds stopped before PWM chages from 1500us
 
+%{
 %% Ramp Generation
 start_pwm = 1200;
 stop_pwm = 1800;
 [pwm_ramp,pwm_ramp_int] = RampGenerator(start_pwm,stop_pwm,cycle_length,cycles_per_run,sample_rate,gap_length);
 figure
-
 
 %% Square Wave Generation
 high_pwm = 1700;
@@ -36,4 +36,44 @@ plot((0:(length(pwm_square)-1))/sample_rate,pwm_square);
 plot((0:(length(pwm_sine)-1))/sample_rate,pwm_sine);
 xlabel("time (s)")
 ylabel("PWM (us)")
+%}
 
+
+%% csv creation
+    %Ramp Tests
+    starts = [1200,1300,1400,1600,1700,1800];
+    stops = [1800,1700,1600,1400,1300,1200];
+    cycle_length = max(cycle_length).*ones(size(starts));
+    cycles_per_run = max(cycles_per_run).*ones(size(starts));
+    sample_rate = sample_rate;
+    ramps = cell(length(starts)); ramp_ints = cell(length(starts));
+    for i=1:length(starts)
+        [ramps{i},ramp_ints{i}] = RampGenerator(starts(i),stops(i),cycle_length(i),cycles_per_run(i),sample_rate,gap_length);
+        file_name = sprintf("./test_signals/ramps/ramp_%d-%d(us)_test_%d(Hz).csv",starts(i),stops(i),sample_rate);
+        writematrix([(0:(length(ramps{i})-1))'/sample_rate,ramps{i}],file_name);
+    end
+
+    %Square Tests
+    starts = [1200,1300,1400,1600,1700,1800];
+    stops = 1500.*ones(size(starts));
+    cycle_length = max(cycle_length).*ones(size(starts));
+    cycles_per_run = max(cycles_per_run).*ones(size(starts));
+    sample_rate = sample_rate;
+    squares = cell(length(starts)); square_ints = cell(length(starts));
+    for i=1:length(starts)
+        [squares{i},square_ints{i}] = SquareGenerator(starts(i),stops(i),cycle_length(i),cycles_per_run(i),sample_rate,gap_length);
+        file_name = sprintf("./test_signals/squares/square_%d-%d(us)_test_%d(Hz).csv",starts(i),stops(i),sample_rate);
+        writematrix([(0:(length(squares{i})-1))'/sample_rate,squares{i}],file_name);
+    end
+
+    %Sine Tests
+    Amplitude = [50,100,150,200,250];
+    cycle_length = max(cycle_length).*ones(size(Amplitude));
+    cycles_per_run = max(cycles_per_run).*ones(size(Amplitude));
+    sample_rate = sample_rate;
+    sines = cell(length(Amplitude)); sine_ints = cell(length(Amplitude));
+    for i=1:length(Amplitude)
+        [sines{i},sine_ints{i}] = SineGenerator(Amplitude(i),cycle_length(i),cycles_per_run(i),sample_rate,gap_length);
+        file_name = sprintf("./test_signals/sines/sine_%d(us)_test_%d(Hz).csv",Amplitude(i),sample_rate);
+        writematrix([(0:(length(squares{i})-1))'/sample_rate,squares{i}],file_name);
+    end
