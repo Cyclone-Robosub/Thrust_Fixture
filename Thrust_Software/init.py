@@ -1,8 +1,6 @@
-import RPi.GPIO as GPIO                # import GPIO
-from hx711 import HX711                # import the class HX711
-  
-GPIO.setmode(GPIO.BCM)                 # set GPIO pin mode to BCM numbering
+from hx711 import *
 
 # initialize both amplifiers
-hx_1 = HX711(23, 24)
-hx_2 = HX711(27, 22)
+# initalize the hx711 with pin 21 as clock pin, pin 20 as data pin
+hx_1 = hx711(Pin(21), Pin(20))
+hx_2 = hx711(Pin(), Pin())
