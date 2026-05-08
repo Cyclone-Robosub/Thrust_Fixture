@@ -3,7 +3,7 @@ from init import hx_1, hx_2
 
 # tare the load cells
 hx_1.tare()
-hx_2.tare(30)
+hx_2.tare()
 
 # calibrate the load cells
 ratio = 1
