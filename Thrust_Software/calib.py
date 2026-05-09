@@ -11,4 +11,4 @@ offset_1 = tare(hx_1)
 offset_2 = tare(hx_2)
 
 # calibration ratio ... needs to be experimentally determined
-ratio = 1
+ratio = 220
