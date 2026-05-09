@@ -1,11 +1,14 @@
-from hx711 import HX711
 from init import hx_1, hx_2
 
-# tare the load cells
-hx_1.tare()
-hx_2.tare()
+# Tare function --> takes samples, averages, calls that 0
+def tare(hx, samples=10):
+    total = 0
+    for _ in range(samples):
+        total += hx.get_value()
+    return total // samples
 
-# calibrate the load cells
+offset_1 = tare(hx_1)
+offset_2 = tare(hx_2)
+
+# calibration ratio ... needs to be experimentally determined
 ratio = 1
-hx_1.set_reference_unit(ratio)
-hx_2.set_reference_unit(ratio)
