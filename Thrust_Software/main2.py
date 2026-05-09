@@ -51,8 +51,8 @@ with open(filename, 'w') as f_out:
 
 # Main data collection loop
 try:
-    with open(signal_name + '.csv', 'r') as f:
-        for line in f:
+    with open(signal_name + '.csv', 'r') as f_in, open(filename, 'a') as f_out:
+        for line in f_in:
             col = line.strip().split(',')
             if len(col) < 2:
                 continue
@@ -64,8 +64,8 @@ try:
             reading_1 = (hx_1.get_value() - offset_1) / ratio
             reading_2 = (hx_2.get_value() - offset_2) / ratio
         
-            with open(filename, 'a') as f_out:
-                f_out.write(f'{times}, {reading_1}, {reading_2}, {pwm}\n')
+            f_out.write(f'{times}, {reading_1}, {reading_2}, {pwm}\n')
+            f_out.flush()
 
 except KeyboardInterrupt:
     print("\nStopped by user.")
