@@ -3,28 +3,29 @@ import time
 from machine import PWM, Pin
 from calib import hx_1, hx_2, offset_1, offset_2, ratio
 
-# when reading the .csv ignore the first column
-# set the sampling rate of the force values to 2 x frequency? Nyquist
-# add a PWM log?
-# Available PWM signal files --> these will need to be routed to computer's files?
-PWMs = ['square_wave_1700us_test', 'sine_50(us)_test_80(Hz)', 'ramp_1900-1200(us)_test_80(Hz)']
-
-# correct GPIO?
-ESC = PWM(Pin(5))
-
-# ESC frequency matches sampling rate
-frequency = 80
-ESC.freq(frequency)
-
 # 65535 corresponds to the 16 bits of the Pico, the 12500 corresponds to the freqeuncy
 def set_throttle(pulse_us, frequency):
     div = 10**6 / frequency
     duty = int(pulse_us * 65535 / div)
     ESC.duty_u16(duty)
 
+def arm_esc():
+    print("Arming ESC ... ")
+    set_throttle(1000, frequency)
+    time.sleep(2)
+    print("ESC armed.")
+
+# Available PWM signal files --> these will need to be routed to computer's files?
+PWMs = ['square_wave_1700us_test', 'sine_50(us)_test_80(Hz)', 'ramp_1900-1200(us)_test_80(Hz)']
+
+# correct GPIO
+ESC = PWM(Pin(5))
+
+frequency = 80
+ESC.freq(frequency)
+
 # Arm the ESC
-set_throttle(1000, frequency)
-time.sleep(2)
+arm_esc()
 
 # Display available signals
 print("Available Signals: ")
@@ -38,7 +39,7 @@ if signal_name in PWMs:
     print(f"Selected: {signal_name}")
 else:
     print(f"Signal {signal_name} not found.")
-    exit()
+    raise SystemExit
 
 #start_time = time.ticks_ms()
 t = time.localtime()
