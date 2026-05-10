@@ -33,15 +33,18 @@ for i, name in enumerate(PWMs):
     print(f"  {i}: {name}")
 
 # Select signal
-signal_name = input("Enter PWM Signal Name: ")
-
-if signal_name in PWMs:
-    print(f"Selected: {signal_name}")
-else:
-    print(f"Signal {signal_name} not found.")
+try:
+    selection = int(input("\nEnter the index of PWM signal you choose: "))
+    if 0 <= selection < len(PWMs):
+        signal_name = PWMs[selection]
+        print(f"Selected {signal_name}")
+    else:
+        print("Enter a valid index: ")
+        raise SystemExit
+except ValueError:
+    print("Enter a valid number")
     raise SystemExit
 
-#start_time = time.ticks_ms()
 t = time.localtime()
 timestamp = '{}-{:02d}-{:02d}-{:02d}-{:02d}-{:02d}'.format(t[0], t[1], t[2], t[3], t[4], t[5])
 filename = f'{signal_name}-{timestamp}.csv'
