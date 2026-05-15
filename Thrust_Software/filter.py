@@ -2,6 +2,7 @@ import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
 
+# may want to use sps.convolve so I can convolve 2d signal
 def moving_average(data, window):
     kernel = np.ones(window) / window
     # (input signal, kernel, mode for length of output)
@@ -24,8 +25,8 @@ try:
     selection = int(input("\nEnter the index of signal you would like to filter: "))
     if 0 <= selection < len(file_list):
         signal_name = file_list[selection]
-        data = outs[signal_name]
-        data = outs[signal_name][:, 1]  # change 1 to whichever column has your signal
+        data = outs[signal_name] # this outputs as a two dimensional signal
+        data = outs[signal_name][:, 1]  # changes to one dimensional
         print(f"Selected: {signal_name}")
     else:
         print("Enter a proper index.")

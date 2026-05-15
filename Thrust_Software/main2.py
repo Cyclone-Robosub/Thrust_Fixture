@@ -16,7 +16,7 @@ def arm_esc():
     print("ESC armed.")
 
 # Available PWM signal files --> these will need to be routed to computer's files?
-PWMs = ['square_wave_1700us_test', 'sine_50(us)_test_80(Hz)', 'ramp_1900-1200(us)_test_80(Hz)']
+PWMs = ['square_1800-1500(us)_test_80(Hz)', 'sine_50(us)_test_80(Hz)', 'ramp_1900-1200(us)_test_80(Hz)']
 
 # correct GPIO
 ESC = PWM(Pin(5))
@@ -53,24 +53,38 @@ filename = f'{signal_name}-{timestamp}.csv'
 with open(filename, 'w') as f_out:
     f_out.write('time_ms,loadcell_1,loadcell_2,pwm\n')
 
+# Pre-allocate the PWM signal
+with open(signal_name + '.csv', 'r') as f_in:
+    val = []
+    for line in f_in:
+        col = line.strip().split(',')
+        if len(col) < 2:
+            continue
+        val.append((float(col[0]), int(col[1])))
+
+scale = 1.0/ratio
+count = 0
+
 # Main data collection loop
 try:
-    with open(signal_name + '.csv', 'r') as f_in, open(filename, 'a') as f_out:
-        for line in f_in:
-            col = line.strip().split(',')
-            if len(col) < 2:
-                continue
-            times = float(col[0])
-            pwm = int(col[1])
+    print("Starting Run \n")
+    with open(filename, 'a') as f_out:
+        for times, pwm in val:
             set_throttle(pwm, frequency)
 
             # take calibrated readings
-            reading_1 = (hx_1.get_value() - offset_1) / ratio
-            reading_2 = (hx_2.get_value() - offset_2) / ratio
+            reading_1 = (hx_1.get_value() - offset_1) * scale
+            reading_2 = (hx_2.get_value() - offset_2) * scale
         
             f_out.write(f'{times}, {reading_1}, {reading_2}, {pwm}\n')
-            f_out.flush()
 
+            # increment the count by 1
+            count += 1
+            if count % 100 == 0:
+                f_out.flush()
+            
+    f_out.flush()
+    
 except KeyboardInterrupt:
     print("\nStopped by user.")
 

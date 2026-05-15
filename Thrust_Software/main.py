@@ -53,6 +53,8 @@ filename = f'{signal_name}-{timestamp}.csv'
 with open(filename, 'w') as f_out:
     f_out.write('time_ms,loadcell_1,loadcell_2,pwm\n')
 
+scale = 1.0/ratio
+
 # Main data collection loop
 try:
     with open(signal_name + '.csv', 'r') as f:
@@ -65,8 +67,8 @@ try:
             set_throttle(pwm, frequency)
 
             # take calibrated readings
-            reading_1 = (hx_1.get_value() - offset_1) / ratio
-            reading_2 = (hx_2.get_value() - offset_2) / ratio
+            reading_1 = (hx_1.get_value() - offset_1) * scale
+            reading_2 = (hx_2.get_value() - offset_2) * scale
         
             with open(filename, 'a') as f_out:
                 f_out.write(f'{times}, {reading_1}, {reading_2}, {pwm}\n')
