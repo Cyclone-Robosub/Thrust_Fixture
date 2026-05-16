@@ -58,7 +58,7 @@ count = 0
 # Main data collection loop
 
 # start the clock
-start_time = time.tick_ms()
+start_time = time.ticks_ms()
 
 try:
     with open(signal_name + '.csv', 'r') as f_in, open(filename, 'a') as f_out:
@@ -70,7 +70,7 @@ try:
             pwm = int(col[1])
 
             # determine elasped time by subtracting time of iteration
-            elapsed = time.tick_diff(time.ticks_ms(), start_time)
+            elapsed = time.ticks_diff(time.ticks_ms(), start_time)
             
             time.sleep_ms(100)
             set_throttle(pwm, frequency)
@@ -83,7 +83,7 @@ try:
 
             # increment the count by 1
             count += 1
-            #print(count)
+            # print(count)
             
             # change the % x value depending on number of flushes desired
             if count % 100 == 0:
