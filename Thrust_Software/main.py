@@ -3,12 +3,12 @@ import time
 from machine import PWM, Pin
 from calib import hx_1, hx_2, offset_1, offset_2, ratio
 
+# 65535 corresponds to the 16 bits of the Pico, the 12500 corresponds to the freqeuncy
 def set_throttle(pulse_us, frequency):
     div = 10**6 / frequency
     duty = int(pulse_us * 65535 / div)
     ESC.duty_u16(duty)
 
-# 65535 corresponds to the 16 bits of the Pico, the 12500 corresponds to the freqeuncy
 def arm_esc():
     print("Arming ESC ... ")
     set_throttle(1000, frequency)
@@ -16,11 +16,11 @@ def arm_esc():
     print("ESC armed.")
 
 # Available PWM signal files --> these will need to be routed to computer's files?
-PWMs = ['square_wave_1700us_test', 'sine_50(us)_test_80(Hz)', 'ramp_1900-1200(us)_test_80(Hz)']
+PWMs = ['square_1700-1500(us)_test_10(Hz)']
 
+# correct GPIO
 ESC = PWM(Pin(5))
 
-# ESC frequency matches sampling rate
 frequency = 80
 ESC.freq(frequency)
 
@@ -51,28 +51,48 @@ filename = f'{signal_name}-{timestamp}.csv'
 
 # Write Header
 with open(filename, 'w') as f_out:
-    f_out.write('time_ms,loadcell_1,loadcell_2,pwm\n')
+    f_out.write('time_ms, loadcell_1, loadcell_2, pwm\n')
 
-scale = 1.0/ratio
-
+#scale = 1.0/ratio
+count = 0
 # Main data collection loop
 try:
-    with open(signal_name + '.csv', 'r') as f:
-        for line in f:
+    with open(signal_name + '.csv', 'r') as f_in, open(filename, 'a') as f_out:
+        print("Starting Run \n")
+        for line in f_in:
             col = line.strip().split(',')
             if len(col) < 2:
                 continue
             times = float(col[0])
             pwm = int(col[1])
+            
+            time.sleep_ms(100)
             set_throttle(pwm, frequency)
 
             # take calibrated readings
-            reading_1 = (hx_1.get_value() - offset_1) * scale
-            reading_2 = (hx_2.get_value() - offset_2) * scale
+            reading_1 = hx_1.get_value()
+            reading_2 = hx_2.get_value()
+            #reading_1 = (hx_1.get_value_noblock() - offset_1) * scale
+            #reading_2 = (hx_2.get_value_noblock() - offset_2) * scale
         
-            with open(filename, 'a') as f_out:
-                f_out.write(f'{times}, {reading_1}, {reading_2}, {pwm}\n')
+            #reading_1 = hx_1.get_value_noblock()
+            #reading_2 = hx_2.get_value_noblock()
+            
+            #reading_1 = hx_1.get_value_timeout(12000)
+            #reading_2 = hx_2.get_value_timeout(12000)
+            
+            f_out.write(f'{times}, {reading_1}, {reading_2}, {pwm}\n')
 
+            # increment the count by 1
+            count += 1
+            print(count)
+            
+            # change the % x value depending on number of flushes desired
+            if count % 100 == 0:
+                f_out.flush()
+            
+    f_out.flush()
+    
 except KeyboardInterrupt:
     print("\nStopped by user.")
 
