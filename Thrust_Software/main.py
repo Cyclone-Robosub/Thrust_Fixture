@@ -83,7 +83,7 @@ try:
 
             # increment the count by 1
             count += 1
-            print(count)
+            #print(count)
             
             # change the % x value depending on number of flushes desired
             if count % 100 == 0:
