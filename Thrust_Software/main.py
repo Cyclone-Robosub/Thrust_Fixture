@@ -56,6 +56,10 @@ with open(filename, 'w') as f_out:
 #scale = 1.0/ratio
 count = 0
 # Main data collection loop
+
+# start the clock
+start_time = time.tick_ms()
+
 try:
     with open(signal_name + '.csv', 'r') as f_in, open(filename, 'a') as f_out:
         print("Starting Run \n")
@@ -63,8 +67,10 @@ try:
             col = line.strip().split(',')
             if len(col) < 2:
                 continue
-            times = float(col[0])
             pwm = int(col[1])
+
+            # determine elasped time by subtracting time of iteration
+            elapsed = time.tick_diff(time.ticks_ms(), start_time)
             
             time.sleep_ms(100)
             set_throttle(pwm, frequency)
@@ -72,16 +78,8 @@ try:
             # take calibrated readings
             reading_1 = hx_1.get_value()
             reading_2 = hx_2.get_value()
-            #reading_1 = (hx_1.get_value_noblock() - offset_1) * scale
-            #reading_2 = (hx_2.get_value_noblock() - offset_2) * scale
-        
-            #reading_1 = hx_1.get_value_noblock()
-            #reading_2 = hx_2.get_value_noblock()
-            
-            #reading_1 = hx_1.get_value_timeout(12000)
-            #reading_2 = hx_2.get_value_timeout(12000)
-            
-            f_out.write(f'{times}, {reading_1}, {reading_2}, {pwm}\n')
+
+            f_out.write(f'{elapsed}, {reading_1}, {reading_2}, {pwm}\n')
 
             # increment the count by 1
             count += 1
@@ -90,7 +88,7 @@ try:
             # change the % x value depending on number of flushes desired
             if count % 100 == 0:
                 f_out.flush()
-            
+    # this flush is likely unnecessary       
     f_out.flush()
     
 except KeyboardInterrupt:
