@@ -1,5 +1,5 @@
 %% setup
-clear,clc
+%clear,clc
 
 %% initial conditions
 w0 = 0;
@@ -10,13 +10,12 @@ run("coeffs.m");
 
 %% sim run
 %set step input
-tspan = 10;
-dt = .001;
+tspan = 100; %[s]
+dt = .01; %[s]
 
-    PWM = 1500e-6; %[s]
+    PWM = 1700e-6; %[s]
     inputStructure.time = [0:dt:tspan]';
     inputSignal1 = PWM.*ones(size(inputStructure.time));
-    %inputSignal1 = PWM.*[0:(dt/tspan):1]';
     inputStructure.signals(1).values = inputSignal1;
 
     results = sim("thruster_model");
