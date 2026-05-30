@@ -1,10 +1,10 @@
 %% Resampling
-desired_fs = 5;
+desired_fs = 10;
 irregTx = emp_results.tout - emp_results.tout(1);
 x = emp_results.T.Data;
 [y,Ty] = resample(x,irregTx,desired_fs);
 
-[pwm_resamp,~] = resample(exp_results.PWM.Data,irregTx,desired_fs);
+[pwm_resamp,~] = resample(exp_results.PWM.Data.*10^6,irregTx,desired_fs,"linear");
 
 %% Validation:
 if vld_plt
@@ -24,7 +24,11 @@ exp_results.T.Data = y;
 exp_results.T.Time = Ty;
 exp_results.T.TimeInfo.Increment = Ty(2)-Ty(1);
 exp_results.PWM = timeseries;
-exp_results.PWM.Data = pwm_resamp;
+if(type_index == 3)
+    exp_results.PWM.Data = round(pwm_resamp*10^-6,4);
+else
+    exp_results.PWM.Data = round(pwm_resamp,0)*10^-6;
+end
 exp_results.PWM.Time = Ty;
 exp_results.PWM.TimeInfo.Increment = Ty(2)-Ty(1);
 exp_results.tout = Ty;

@@ -30,7 +30,7 @@ Options_tf.InitialCondition = 'zero';
 Options_tf.SearchOptions.Tolerance = 1e-19;
 Options_tf.SearchOptions.MaxIterations = 10000;
 
-tf = tfest(mydata, 2, 0, Options_tf);
+tf = tfest(mydata, 4, 2, Options_tf);
 tf.Name = 'tfModel';
 
 
@@ -41,7 +41,7 @@ if nargin == 2
     %y = vertcat(zeros(50,1), refResult.T.Data);
     %u = vertcat(zeros(50,1),refResults.PWM.Data);
     y = refResult.T.Data;
-    u = refResults.PWM.Data;
+    u = refResult.PWM.Data;
     transientref = iddata(y, u, Ts);
 
     figure

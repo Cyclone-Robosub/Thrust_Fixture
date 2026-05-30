@@ -2,7 +2,7 @@
 clear,clc,close
 
 %% Use validation plots
-vld_plt = 1;
+vld_plt = 0;
 
 % just a fun comparison of the guarded vs unguarded data
 
@@ -16,23 +16,34 @@ run("coeffs.m");
 %% Read data
 % still need to implement validation data retreival...
 % chose data
-type_index = 3; %1= ramps, 2 = sines, 3 = squares
-file_index = 3; %must be larger than 2
+type_index = 1; %1= ramps, 2 = sines, 3 = squares
+file_index = 6; %must be larger than 2
 guard_index = 2; %1=free, 2=gaurd
 
 % just a fun comparison of the guarded vs unguarded data
-if vld_plt
-    run("guard_compare.m");
-end
+run("guard_compare.m"); %right now, this is loading in everything...
+run("read_and_plot.m");
 
+exp_results1 = exp_results;
+
+
+%% Read data
+% still need to implement validation data retreival...
+% chose data
+type_index = 1; %1= ramps, 2 = sines, 3 = squares
+file_index = 4; %must be larger than 2
+guard_index = 2; %1=free, 2=gaurd
+
+% just a fun comparison of the guarded vs unguarded data
+run("guard_compare.m"); %right now, this is loading in everything...
 run("read_and_plot.m");
 
 %% Sim Run
-tspan = time(end)./1000; %[s]
-dt = mean(exp_results.tout(2:end)-exp_results.tout(1:(end-1)));
+tspan = exp_results.tout(end); %[s]
+dt = exp_results.T.TimeInfo.Increment;
     
-inputStructure.time = time./1000; %[s]
-inputStructure.signals(1).values = pwm.*10^(-6);
+inputStructure.time = exp_results.PWM.Time; %[s]
+inputStructure.signals(1).values = exp_results.PWM.Data;
     
 results = sim("thruster_model");
 
@@ -42,8 +53,8 @@ subplot 211
 xlabel("Time(s)")
 ylabel("Thrust(N)")
 hold
-plot(time.*10^-3,LS_2_force)
-plot(time.*10^-3,LS_1_force)
+plot(Gtime.*10^-3,G_LS_1.Data)
+plot(Gtime.*10^-3,G_LS_2.Data)
 plot(exp_results.T.Time,exp_results.T.Data)
 plot(time.*10^-3,ideal_thrust)
 plot(results.T.Time,results.T.Data)
@@ -55,11 +66,12 @@ xlabel("Time(s)")
 ylabel("PWM (\mus)")
 plot(results.PWM.Time,results.PWM.Data)
 ylim([0,2000e-6])
-plot(time.*10^-3,pwm.*10^-6)
+hold
+plot(emp_results.PWM.Time-emp_results.PWM.Time(1),emp_results.PWM.Data)
 
 
 %% System Identification
-[TF, SS] = sysId(exp_results)
+[TF, SS] = sysId(exp_results, exp_results1)
 
 %% Parameter Estimation
-% run("param_est.m")
+%run("param_est.m")

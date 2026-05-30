@@ -76,15 +76,14 @@ subplot 211
 xlabel("Time(s)")
 ylabel("Thrust(N)")
 hold
-plot(time.*10^-3,LS_2_force)
-plot(time.*10^-3,LS_1_force)
-plot(time.*10^-3,ideal_thrust)
+plot(exp_results.T.Time,exp_results.T.Data)
+plot(Gtime.*10^-3,ideal_thrust)
 Simulator = createSimulator(Exp);
 SimLog = sim(Simulator);
 SimLog = find(SimLog.LoggedData,get_param('thruster_model','SignalLoggingName'));
 sim_thrust = find(SimLog,"T");
 plot(sim_thrust.Values.Time,sim_thrust.Values.Data)
-legend("LS_2","LS_1","ideal_thrust","sim_thrust")
+legend("Thrust","ideal_thrust","sim_thrust")
 
 
 subplot 212
@@ -92,5 +91,3 @@ plot(results.PWM.Time,results.PWM.Data)
 xlabel("Time(s)")
 ylabel("PWM (\mus)")
 ylim([0,2000e-6])
-plot(time.*10^-3,pwm.*10^-6)
-
